@@ -35,7 +35,7 @@ def index():
         voted_data = c.fetchall()
         conn.close()
 
-        # 상태별 분류
+        # 상태별 분류 (이름만 추출)
         attending = [name for name, status in voted_data if status == '참석']
         undecided = [name for name, status in voted_data if status == '미정']
         absent = [name for name, status in voted_data if status == '불참']
@@ -58,7 +58,7 @@ def index():
 
 @app.route('/join', methods=['POST'])
 def join():
-    name = request.form.get('name', '').strip() # 공백 제거
+    name = request.form.get('name', '').strip()
     status = request.form.get('status')
     
     if name:
@@ -74,6 +74,15 @@ def join():
             
         conn.commit()
         conn.close()
+    return redirect('/')
+
+@app.route('/delete/<name>')
+def delete(name):
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("DELETE FROM attendance WHERE name=?", (name,))
+    conn.commit()
+    conn.close()
     return redirect('/')
 
 if __name__ == '__main__':
