@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>축구팀 명단 관리</title>
+</head>
+<body>
+    <h1>⚽ 이번 주 경기 참여 현황</h1>
+    <p>현재 참석 인원: <strong>{{ count }}명</strong></p>
+    
+    <form action="/join" method="post">
+        이름: <input type="text" name="name" required>
+        <button type="submit" name="status" value="참석">참석</button>
+        <button type="submit" name="status" value="불참">불참</button>
+    </form>
+
+    <h3>참석자 명단</h3>
+    <ul>
+        {% for member in members %}
+        <li>{{ member[0] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
