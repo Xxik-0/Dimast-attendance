@@ -22,24 +22,27 @@ def index():
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
         
-        # 1. 참석자 명단 가져오기
+        # 각 상태별로 명단 가져오기
         c.execute("SELECT name FROM attendance WHERE status='참석'")
         attending = c.fetchall()
         
-        # 2. 미정 명단 가져오기 (추가)
         c.execute("SELECT name FROM attendance WHERE status='미정'")
         undecided = c.fetchall()
+
+        c.execute("SELECT name FROM attendance WHERE status='불참'")
+        absent = c.fetchall()
         
         conn.close()
         
         return render_template('index.html', 
                                attending=attending, 
                                undecided=undecided, 
+                               absent=absent,
                                attending_count=len(attending),
-                               undecided_count=len(undecided))
+                               undecided_count=len(undecided),
+                               absent_count=len(absent))
     except Exception as e:
-        init_db()
-        return f"데이터 로딩 중... 잠시 후 새로고침 해주세요. ({e})"
+        return f"데이터 로딩 중 에러: {e}"
 
 @app.route('/join', methods=['POST'])
 def join():
@@ -49,7 +52,6 @@ def join():
     if name:
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
-        # 이름이 이미 있는지 확인 (수정 기능)
         c.execute("SELECT id FROM attendance WHERE name=?", (name,))
         existing = c.fetchone()
         
