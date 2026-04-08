@@ -6,65 +6,90 @@
     <title>축구팀 참석 투표</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
-        .container { max-width: 500px; margin-top: 30px; }
-        .card { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .btn-check:checked + .btn { filter: brightness(0.9); border: 2px solid #000; }
-        .member-list { background: white; border-radius: 10px; padding: 15px; }
-        .member-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
+        body { background-color: #f1f3f5; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+        .container { max-width: 500px; margin-top: 20px; padding-bottom: 50px; }
+        .card { border-radius: 20px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .btn-lg { border-radius: 12px; transition: transform 0.1s; }
+        .btn-lg:active { transform: scale(0.95); }
+        .member-list { background: white; border-radius: 15px; padding: 10px 20px; }
+        .member-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f1f1; padding: 12px 0; }
         .member-item:last-child { border-bottom: none; }
-        .badge-count { font-size: 1.2rem; vertical-align: middle; }
+        .section-title { font-size: 1.1rem; margin-top: 30px; margin-bottom: 15px; color: #495057; }
+        .status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="text-center mb-4">
-        <h2 class="fw-bold">⚽ 이번 주 경기 투표</h2>
-        <p class="text-muted">50명 정원 중 현재 참석 인원을 확인하세요!</p>
+        <h2 class="fw-bold">⚽ 축구팀 참석 투표</h2>
+        <p class="text-muted">실명을 입력하고 상태를 선택해 주세요!</p>
     </div>
 
-    <div class="card mb-4">
+    <div class="card mb-2">
         <div class="card-body p-4">
             <form action="/join" method="post">
-                <div class="mb-3">
-                    <label for="name" class="form-label fw-bold">이름</label>
-                    <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="실명을 입력하세요" required>
+                <div class="mb-4">
+                    <label for="name" class="form-label fw-bold">성함</label>
+                    <input type="text" class="form-control form-control-lg border-0 bg-light" id="name" name="name" placeholder="이름 입력" required>
                 </div>
                 
-                <div class="row g-2 mb-3">
-                    <div class="col-6">
+                <div class="row g-2">
+                    <div class="col-4">
                         <button type="submit" name="status" value="참석" class="btn btn-primary btn-lg w-100 py-3 fw-bold">참석</button>
                     </div>
-                    <div class="col-6">
+                    <div class="col-4">
+                        <button type="submit" name="status" value="미정" class="btn btn-warning btn-lg w-100 py-3 fw-bold text-white">미정</button>
+                    </div>
+                    <div class="col-4">
                         <button type="submit" name="status" value="불참" class="btn btn-outline-danger btn-lg w-100 py-3 fw-bold">불참</button>
                     </div>
                 </div>
-                <small class="text-center d-block text-muted">이미 투표했다면 이름 입력 후 다시 누르면 수정됩니다.</small>
             </form>
         </div>
     </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold mb-0">참석자 명단</h4>
-        <span class="badge bg-success badge-count">{{ count }}명 참석 중</span>
+    <div class="text-center mb-4">
+        <small class="text-muted text-center">* 이름을 똑같이 쓰면 상태가 수정됩니다.</small>
     </div>
 
+    <hr class="my-4">
+
+    <div class="d-flex justify-content-between align-items-end section-title">
+        <h5 class="fw-bold mb-0">✅ 참석 확정</h5>
+        <span class="text-primary fw-bold">{{ attending_count }}명</span>
+    </div>
     <div class="member-list shadow-sm">
-        {% if members %}
-            {% for member in members %}
+        {% if attending %}
+            {% for person in attending %}
             <div class="member-item">
-                <span class="fw-bold" style="font-size: 1.1rem;">{{ member[0] }}</span>
-                <span class="text-primary small">✅ 참석 확정</span>
+                <span class="fw-bold">{{ person[0] }}</span>
+                <span class="status-badge bg-primary text-white">참석</span>
             </div>
             {% endfor %}
         {% else %}
-            <p class="text-center text-muted my-3">아직 투표한 인원이 없습니다.</p>
+            <p class="text-center text-muted my-3 small">아직 참석자가 없습니다.</p>
         {% endif %}
     </div>
-    
-    <div class="text-center mt-5 pb-5">
-        <p class="text-secondary small">© 2026 우리 축구팀 명단 관리</p>
+
+    <div class="d-flex justify-content-between align-items-end section-title">
+        <h5 class="fw-bold mb-0 text-secondary">🤔 고민 중</h5>
+        <span class="text-warning fw-bold">{{ undecided_count }}명</span>
+    </div>
+    <div class="member-list shadow-sm">
+        {% if undecided %}
+            {% for person in undecided %}
+            <div class="member-item">
+                <span class="text-secondary">{{ person[0] }}</span>
+                <span class="status-badge bg-warning text-white">미정</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center text-muted my-3 small">미정 인원이 없습니다.</p>
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-5">
+        <p class="text-secondary" style="font-size: 0.8rem;">⚽ 오늘도 즐겁게 차봅시다!</p>
     </div>
 </div>
 
