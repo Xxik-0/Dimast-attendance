@@ -5,7 +5,9 @@ app = Flask(__name__)
 
 # 데이터베이스 연결 및 테이블 생성 (최초 1회)
 def init_db():
-    conn = sqlite3.connect('soccer_team.db')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(basedir, 'soccer_team.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS attendance 
                  (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, status TEXT)''')
@@ -14,7 +16,9 @@ def init_db():
 
 @app.route('/')
 def index():
-    conn = sqlite3.connect('soccer_team.db')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(basedir, 'soccer_team.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     # 참석 인원만 집계
     c.execute("SELECT name FROM attendance WHERE status='참석'")
@@ -27,7 +31,9 @@ def join():
     name = request.form['name']
     status = request.form['status']
     
-    conn = sqlite3.connect('soccer_team.db')
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(basedir, 'soccer_team.db')
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
     # 기존 데이터가 있으면 업데이트, 없으면 삽입
     c.execute("INSERT INTO attendance (name, status) VALUES (?, ?)", (name, status))
