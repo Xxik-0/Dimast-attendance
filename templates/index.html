@@ -15,7 +15,15 @@
         .section-title { font-size: 1.1rem; margin-top: 30px; margin-bottom: 10px; color: #495057; font-weight: bold; }
         .delete-link { color: #dee2e6; text-decoration: none; font-size: 1.2rem; padding: 0 5px; line-height: 1; }
         .delete-link:hover { color: #fa5252; }
-        .not-voted-badge { font-size: 0.85rem; font-weight: normal; }
+        
+        /* [추가] 미투표자 명단 클릭 스타일 */
+        .not-voted-badge { 
+            font-size: 0.85rem; 
+            font-weight: normal; 
+            cursor: pointer; /* 마우스 올리면 손가락 모양 */
+            transition: all 0.2s;
+        }
+        .not-voted-badge:active { transform: scale(0.9); background-color: #ffe3e3 !important; }
     </style>
 </head>
 <body>
@@ -23,7 +31,7 @@
 <div class="container">
     <div class="text-center mb-4">
         <h2 class="fw-bold">⚽ 축구팀 참석 투표</h2>
-        <p class="text-muted small">이름을 잘못 입력했다면 옆의 'x'를 눌러 지우고 다시 해주세요.</p>
+        <p class="text-muted small">이름을 입력하거나, 아래 <b>'미투표자' 명단에서 본인 이름을 누르세요!</b></p>
     </div>
 
     <div class="card mb-4">
@@ -82,19 +90,29 @@
     </div>
 
     <div class="d-flex justify-content-between section-title">
-        <span class="text-danger fw-bold">⚠️ 아직 투표 안 함</span>
+        <span class="text-danger fw-bold">⚠️ 아직 투표 안 함 (누르면 자동입력)</span>
         <span class="badge bg-dark">{{ not_voted_count }}명</span>
     </div>
     <div class="member-list shadow-sm mb-5" style="background-color: #fff5f5;">
         <div class="d-flex flex-wrap gap-2 py-2">
             {% for name in not_voted %}
-            <span class="badge border text-danger border-danger-subtle bg-white px-2 py-2 not-voted-badge">
+            <span class="badge border text-danger border-danger-subtle bg-white px-2 py-2 not-voted-badge" 
+                  onclick="fillName('{{ name }}')">
                 {{ name }}
             </span>
             {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+function fillName(name) {
+    // 입력창(id가 name인 요소)에 클릭한 이름을 넣습니다.
+    document.getElementById('name').value = name;
+    // 화면을 맨 위로 부드럽게 올립니다 (선택 사항)
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 
 </body>
 </html>
