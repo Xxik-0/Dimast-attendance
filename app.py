@@ -35,17 +35,29 @@ def index():
 
 @app.route('/join', methods=['POST'])
 def join():
+    @app.route('/join', methods=['POST'])
+def join():
     name = request.form.get('name')
     status = request.form.get('status')
     
     if name:
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
-        c.execute("INSERT INTO attendance (name, status) VALUES (?, ?)", (name, status))
+        
+        # 1. 먼저 이 이름이 명단에 있는지 확인합니다.
+        c.execute("SELECT id FROM attendance WHERE name=?", (name,))
+        existing_user = c.fetchone()
+        
+        if existing_user:
+            # 2. 이미 있다면 상태(참석/불참)만 업데이트합니다.
+            c.execute("UPDATE attendance SET status=? WHERE name=?", (status, name))
+        else:
+            # 3. 없다면 새로 추가합니다.
+            c.execute("INSERT INTO attendance (name, status) VALUES (?, ?)", (name, status))
+            
         conn.commit()
         conn.close()
     return redirect('/')
-
 # Render(Gunicorn) 환경에서는 아래 블록이 무시될 수 있습니다.
 if __name__ == '__main__':
     app.run(debug=True)
