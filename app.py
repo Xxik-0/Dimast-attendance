@@ -21,13 +21,25 @@ def index():
     try:
         conn = sqlite3.connect(db_path)
         c = conn.cursor()
-        # 참석자 명단만 가져오기
+        
+        # 1. 참석자 명단 가져오기
         c.execute("SELECT name FROM attendance WHERE status='참석'")
-        members = c.fetchall()
+        attending = c.fetchall()
+        
+        # 2. 미정 명단 가져오기 (추가)
+        c.execute("SELECT name FROM attendance WHERE status='미정'")
+        undecided = c.fetchall()
+        
         conn.close()
-        return render_template('index.html', members=members, count=len(members))
+        
+        return render_template('index.html', 
+                               attending=attending, 
+                               undecided=undecided, 
+                               attending_count=len(attending),
+                               undecided_count=len(undecided))
     except Exception as e:
-        return f"DB 접속 중 에러: {e}"
+        init_db()
+        return f"데이터 로딩 중... 잠시 후 새로고침 해주세요. ({e})"
 
 @app.route('/join', methods=['POST'])
 def join():
